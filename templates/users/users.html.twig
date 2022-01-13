@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Tableau utilisateurs
+{% endblock %}
+{% block body %}
+  <div class="p-5">
+    <h2>
+      Tableau utilisateurs
+    </h2>
+
+    <table class="table table-responsive">
+      <tr>
+        <th>
+          Prénom
+        </th>
+        <th>
+          Nom
+        </th>
+        <th>
+          Date anniversaire
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+      {% for user in users %}
+        <tr>
+          <td>
+            {{ user.firstName }}
+          </td>
+          <td>
+            {{ user.lastName }}
+          </td>
+          <td>
+            {{ user.birthday|date('d/m/Y') }}
+          </td>
+          <td>
+            {{ user.description }}
+          </td>
+          <td>
+            <a href="{{
+              path(
+                'get-user',
+                {
+                  id: user.id
+                }
+              )
+              }}"
+              class="btn btn-primary">
+              Voir
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}
