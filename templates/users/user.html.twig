@@ -28,5 +28,24 @@
     <p>
       Description : {{ user.description }}
     </p>
+
+    {# Ajout du form #}
+    <h2>
+      Modifier utilisateur
+      {{
+        form(
+          form,
+          {
+            action: path(
+              'post-user',
+              {
+                id: user.id
+              }
+            ),
+            method: 'POST'
+          }
+        )
+      }}
+    </h2>
   </div>
 {% endblock %}

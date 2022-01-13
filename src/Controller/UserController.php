@@ -11,6 +11,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use App\Form\Type\UserType;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserController extends AbstractController
 {
@@ -50,7 +52,45 @@ class UserController extends AbstractController
   public function getOneUser(UserManager $userManager, int $id)
   {
     $user = $userManager->findOneWithDescription($id);
-    return $this->render('users/user.html.twig', ['user' => $user]);
+
     //return new Response($this->serializer->serialize($user, 'json'));
+
+
+    // Création de notre Form auquel on passe notre objet User.
+    $form = $this->createForm(UserType::class, $user);
+
+    // On rajoute le Form au template de la fiche utilisateur pour pouvoir l’afficher.
+    return $this->render('users/user.html.twig', ['user' => $user, 'form' => $form->createView()]);
+  }
+
+  /**
+   * @Route("/users/{id}", name="post-user", requirements={"id"="\d+"}, methods={"POST"})
+   *
+   * @param UserManager $userManager
+   * @param Request $request
+   * @param int $id
+   * @return Response
+   * @throws Exception
+   */
+  public function postUser(UserManager $userManager, Request $request, int $id)
+  {
+    $user = $userManager->findOneWithDescription($id);
+    $form = $this->createForm(UserType::class, $user);
+    $form->handleRequest($request);
+
+    // Si le formulaire est soumis et valide
+    if ($form->isSubmitted() && $form->isValid()) {
+      // On récupère l’utilisateur dans le formulaire
+      /** @var User $user */
+      $user = $form->getData();
+
+      // On sauvegarde l’utilisateur
+      $em = $this->getDoctrine()->getManager();
+      $em->persist($user);
+      $em->flush();
+    }
+
+    // On redirige sur la fiche utilisateur
+    return $this->redirectToRoute('get-user', ['id' => $user->getId()]);
   }
 }
