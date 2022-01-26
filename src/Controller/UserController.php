@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Manager\UserManager;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -61,6 +62,45 @@ class UserController extends AbstractController
 
     // On rajoute le Form au template de la fiche utilisateur pour pouvoir l’afficher.
     return $this->render('users/user.html.twig', ['user' => $user, 'form' => $form->createView()]);
+  }
+
+  /**
+   * @Route("/user/new", name="form-new-user", methods={"GET","POST"}))
+   */
+  public function newUser(UserManager $userManager, Request $request)
+  {
+    // Création d'un objet $user vide
+    $user = new User();
+
+    // Création du formulaire
+    $form = $this->createForm(UserType::class, $user);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+      // Méthode POST, données valides, traitement du formulaire
+      $userManager->getRepo()->newUser($user);
+      return $this->redirectToRoute('get-users');
+    }
+
+    // Méthode Get; affichage du formulaire
+    return $this->render('users/newuser.html.twig', ['form' => $form->createView()]);
+  }
+
+
+
+  /**
+   * @Route("/users/delete/{id}", name="delete-user", requirements={"id"="\d+"}, methods={"GET"})
+   *
+   * @param UserManager $userManager
+   * @param Request $request
+   * @param int $id
+   * @return Response
+   * @throws Exception
+   */
+  public function deleteUser(UserManager $userManager, Request $request, int $id)
+  {
+    $userManager->getRepo()->deleteUser($id);
+    return $this->redirectToRoute('get-users');
   }
 
   /**

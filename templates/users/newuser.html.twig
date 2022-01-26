@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  Création d'un nouvel utilisateur
+{% endblock %}
+{% block body %}
+  <div class="p-5">
+    <div class="row">
+      <div class="col-auto">
+        <a class="btn btn-primary" href="{{ path('get-users') }}">Retour</a>
+      </div>
+    </div>
+
+    {# Ajout du form #}
+    <h2>
+      Nouvel utilisateur
+      {{
+        form(
+          form,
+          {
+            action: path('form-new-user', {}),
+            method: 'POST'
+          }
+        )
+      }}
+    </h2>
+  </div>
+{% endblock %}
